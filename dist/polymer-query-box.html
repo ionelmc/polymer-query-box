@@ -1,7 +1,7 @@
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../ionelmc/polymer-select-box.html">
+<link rel="import" href="../../polymer-select-box/dist/polymer-select-box.html">
 
-<polymer-element name="polymer-query-box" constructor="PolymerQueryBox" extends="select-box">
+<polymer-element name="polymer-query-box" constructor="PolymerQueryBox" extends="polymer-select-box">
     <template>
         <style>
             :host::shadow .focused .eliminate {
@@ -196,6 +196,9 @@
                 },
                 get fields() {
                     return this._fields;
+                },
+                set selected(value) {
+                    throw "Not allowed. Use `query` instead !";
                 },
                 set query(value) {
                     value.forEach(function(item, i) {
