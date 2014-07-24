@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>&lt;polymer-query-box&gt;</title>
+
+    <!-- Importing Web Component's Polyfill -->
+    <script src="bower_components/platform/platform.js"></script>
+
+    <!-- Importing Custom Elements -->
+    <link rel="import" href="src/polymer-query-box.html">
+    <style>
+        input, textarea {
+            border: 1px dashed #ddd;
+            border-radius: 2px;
+            display: block;
+            padding: 5px 8px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <input type="text">
+    <polymer-select-box id="unu"></polymer-select-box>
+    <textarea>Extra controls around for focus tests.</textarea>
+    <polymer-query-box id="doi"></polymer-select-box>
+    <input type="text">
+
+    <script>
+        window.addEventListener('polymer-ready', function() {
+            document.getElementById('unu').available = ["asdf", "wer", "lorem", "ipsum", "sil", "a", "b", "c" , "d"];
+            document.getElementById('doi').selected = [{label: 'asdf', value: 'asdf', query: 'it'}]
+            document.getElementById('doi').fields = [
+                'field1',
+                'field2',
+                'field3',
+                'field4'
+            ];
+            document.getElementById('doi').query = [{
+                field: "field1",
+                operator: "==",
+                target: "value",
+                value: ""
+            }, {
+                field: "field1",
+                operator: "!=",
+                target: "field",
+                value: "field4"
+            }]
+            document.getElementById('doi').focus();
+        });
+    </script>
+</body>
+</html>
