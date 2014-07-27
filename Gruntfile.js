@@ -38,10 +38,10 @@ module.exports = function(grunt) {
         },
         shell: {
             register: {
-                command: 'bower register polymer-select-box git://github.com/ionelmc/polymer-select-box.git'
+                command: 'bower register polymer-query-box git://github.com/ionelmc/polymer-query-box.git'
             },
             info: {
-                command: 'bower info polymer-select-box'
+                command: 'bower info polymer-query-box'
             }
         }
     });
