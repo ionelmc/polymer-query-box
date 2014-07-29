@@ -23,7 +23,7 @@
         "README.md"
     ],
     "dependencies": {
-        "polymer": "*",
+        "polymer": "Polymer/polymer",
         "polymer-select-box": ">=1.0.0"
     }
 }
