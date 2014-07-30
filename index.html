@@ -10,12 +10,17 @@
     <!-- Importing Custom Elements -->
     <link rel="import" href="src/polymer-query-box.html">
     <style>
-        input, textarea {
+        input, textarea{
             border: 1px dashed #ddd;
             border-radius: 2px;
             display: block;
+        }
+        input, textarea, blockquote {
             padding: 5px 8px;
             margin: 5px;
+        }
+        blockquote {
+            border-left: 4px solid #ddd;
         }
     </style>
 </head>
@@ -24,19 +29,27 @@
     <input type="text">
     <polymer-select-box id="unu"></polymer-select-box>
     <textarea>Extra controls around for focus tests.</textarea>
+    <template id="result" is="auto-binding">
+        <blockquote>
+            Serialized query is: <blockquote><small><pre>{{ box.query|stringify }}</small></pre></blockquote>
+        </blockquote>
+    </template>
     <polymer-query-box id="doi"></polymer-query-box>
     <input type="text">
 
     <script>
         window.addEventListener('polymer-ready', function() {
-            document.getElementById('unu').available = ["asdf", "wer", "lorem", "ipsum", "sil", "a", "b", "c" , "d"];
-            document.getElementById('doi').fields = [
+            var unu = document.getElementById('unu'),
+                doi = document.getElementById('doi'),
+                result = document.getElementById('result');
+            unu.available = ["asdf", "wer", "lorem", "ipsum", "sil", "a", "b", "c" , "d"];
+            doi.fields = [
                 'field1',
                 'field2',
                 'field3',
                 'field4'
             ];
-            document.getElementById('doi').query = [{
+            doi.query = [{
                 field: "field1",
                 operator: "==",
                 target: "value",
@@ -47,7 +60,11 @@
                 target: "field",
                 value: "field4"
             }]
-            document.getElementById('doi').focus();
+            doi.focus();
+            result.stringify = function(val) {
+                return JSON.stringify(val, null, "    ");
+            };
+            result.box = doi;
         });
     </script>
 </body>
