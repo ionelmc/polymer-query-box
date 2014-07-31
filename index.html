@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>&lt;polymer-query-box&gt;</title>
-
-    <!-- Importing Web Component's Polyfill -->
     <script src="bower_components/platform/platform.js"></script>
-
-    <!-- Importing Custom Elements -->
     <link rel="import" href="src/polymer-query-box.html">
+    <link rel="import" href="bower_components/juicy-ace-editor/src/juicy-ace-editor.html">
     <style>
         input, textarea{
             border: 1px dashed #ddd;
@@ -24,18 +21,52 @@
         }
     </style>
 </head>
-<body>
+<body unresolved>
+    <polymer-element name="json-editor" attributes="json">
+        <template>
+            <style>
+                input { width: 100%; }
+                .failed { background: #faa; }
+            </style>
+            <div>
+                <template if="{{ failed }}">
+                    Failed to parse: {{ failed }}
+                </template>
+                <input value="{{ text }}" class="{{ {failed: failed} | tokenList }}">
+            </div>
+        </template>
+        <script>//<![CDATA[
+            Polymer({
+                json: null,
+                text: "",
+                failed: false,
+                jsonChanged: function(_, val) {
+                    this.text = JSON.stringify(val);
+                },
+                textChanged: function(_, val) {
+                    try {
+                        this.json = JSON.parse(val);
+                        this.failed = false;
+                    } catch(e) {
+                        this.failed = e;
+                    }
+
+                }
+            })
+        //]]></script>
+    </polymer-element>
 
     <input type="text">
     <polymer-select-box id="unu"></polymer-select-box>
     <textarea>Extra controls around for focus tests.</textarea>
     <template id="result" is="auto-binding">
         <blockquote>
-            Serialized query is: <blockquote><small><pre>{{ box.query|stringify }}</small></pre></blockquote>
+            Serialized query is:
+            <json-editor json="{{box.query}}"></json-editor>
         </blockquote>
     </template>
     <polymer-query-box id="doi"></polymer-query-box>
-    <input type="text">
+
 
     <script>
         window.addEventListener('polymer-ready', function() {
@@ -64,6 +95,7 @@
             result.stringify = function(val) {
                 return JSON.stringify(val, null, "    ");
             };
+            result.textQueryChanged = function() {alert("crap:")}
             result.box = doi;
         });
     </script>
