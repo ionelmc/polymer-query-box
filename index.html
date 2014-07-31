@@ -5,7 +5,7 @@
     <title>&lt;polymer-query-box&gt;</title>
     <script src="bower_components/platform/platform.js"></script>
     <link rel="import" href="src/polymer-query-box.html">
-    <link rel="import" href="bower_components/juicy-ace-editor/src/juicy-ace-editor.html">
+    <link rel="import" href="bower_components/core-input/core-input.html">
     <style>
         input, textarea{
             border: 1px dashed #ddd;
@@ -25,18 +25,27 @@
     <polymer-element name="json-editor" attributes="json">
         <template>
             <style>
-                input { width: 100%; }
-                .failed { background: #faa; }
+                core-input {
+                    padding: 5px;
+                    width: 100%;
+                    border: 1px solid #ddd;
+                    font-family: monospace;
+                }
+                .failed {
+                    background: #faa;
+                }
             </style>
             <div>
                 <template if="{{ failed }}">
                     Failed to parse: {{ failed }}
                 </template>
-                <input value="{{ text }}" class="{{ {failed: failed} | tokenList }}">
+
+                <core-input multiline rows="{{ rows }}" inputValue="{{ text }}" class="{{ {failed: failed} | tokenList }}"/>
             </div>
         </template>
         <script>//<![CDATA[
             Polymer({
+                publish: {rows: 1},
                 json: null,
                 text: "",
                 failed: false,
@@ -61,8 +70,10 @@
     <textarea>Extra controls around for focus tests.</textarea>
     <template id="result" is="auto-binding">
         <blockquote>
-            Serialized query is:
-            <json-editor json="{{box.query}}"></json-editor>
+            Serialized query:
+            <json-editor rows="5" json="{{ box.query }}"></json-editor>
+            Fields:
+            <json-editor rows="1" json="{{ box.fields }}"></json-editor>
         </blockquote>
     </template>
     <polymer-query-box id="doi"></polymer-query-box>

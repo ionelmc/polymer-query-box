@@ -1,29 +1,32 @@
 {
-    "name": "polymer-query-box",
-    "version": "1.0.2",
-    "description": "Polymer query editor widget webcomponent",
-    "license": "MIT",
-    "main": "dist/polymer-query-box.html",
-    "keywords": [
-        "polymer",
-        "web-components"
-    ],
-    "ignore": [
-        "**/.*",
-        "src",
-        "node_modules",
-        "bower_components",
-        "*.komodoproject",
-        "*.cmd",
-        ".gitignore",
-        "index.html",
-        "bower.json",
-        "Gruntfile.js",
-        "package.json",
-        "README.md"
-    ],
-    "dependencies": {
-        "polymer": "Polymer/polymer",
-        "polymer-select-box": ">=1.0.0"
-    }
+  "name": "polymer-query-box",
+  "version": "1.0.2",
+  "description": "Polymer query editor widget webcomponent",
+  "license": "MIT",
+  "main": "dist/polymer-query-box.html",
+  "keywords": [
+    "polymer",
+    "web-components"
+  ],
+  "ignore": [
+    "**/.*",
+    "src",
+    "node_modules",
+    "bower_components",
+    "*.komodoproject",
+    "*.cmd",
+    ".gitignore",
+    "index.html",
+    "bower.json",
+    "Gruntfile.js",
+    "package.json",
+    "README.md"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer",
+    "polymer-select-box": ">=1.0.0"
+  },
+  "devDependencies": {
+    "core-input": "Polymer/core-input#~0.3.4"
+  }
 }
