@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         },
         'gh-pages': {
             options: {
-                clone: 'bower_components/polymer-query-box'
+                clone: 'bower_components/query-box'
             },
             src: [
                 'bower_components/**/*',
