@@ -1,4 +1,4 @@
-# &lt;polymer-query-box&gt;
+# &lt;query-box&gt;
 
 > Polymer query editor widget webcomponent
 
@@ -15,7 +15,7 @@ This is a work in progrees. You should consider the API and the internals unstab
 Install the component using [Bower](http://bower.io/):
 
 ```sh
-$ bower install polymer-query-box --save
+$ bower install query-box --save
 ```
 
 Or [download as ZIP](https://github.com/ionelmc/polymer-query-box/archive/master.zip).
@@ -31,32 +31,21 @@ Or [download as ZIP](https://github.com/ionelmc/polymer-query-box/archive/master
 2. Import Custom Element:
 
     ```html
-    <link rel="import" href="bower_components/polymer-query-box/dist/polymer-query-box.html">
+    <link rel="import" href="bower_components/query-box/dist/query-box.html">
     ```
 
 3. Start using it!
 
     ```html
-    <polymer-query-box></polymer-query-box>
+    <query-box></query-box>
     ```
 
 ## Options
 
-Attribute     | Options     | Default      | Description
----           | ---         | ---          | ---
-`foo`         | *string*    | `bar`        | Lorem ipsum dolor.
-
-## Methods
-
-Method        | Parameters   | Returns     | Description
----           | ---          | ---         | ---
-`unicorn()`   | None.        | Nothing.    | Magic stuff appears.
-
-## Events
-
-Event         | Description
----           | ---
-`onsomething` | Triggers when something happens.
+Attribute     | Options              | Default      | Description
+---           | ---                  | ---          | ---
+`query`       | *list of objects*    | `[]`         | Eg: `[{field: "field1", operator: "==", target: "value", value: ""}]
+`fields`      | *list of strings*    | `[]`         | The list of fields to make available in the query box.
 
 ## Development
 
