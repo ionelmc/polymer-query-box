@@ -1,7 +1,7 @@
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../polymer-select-box/dist/polymer-select-box.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/select-box/dist/select-box.html">
 
-<polymer-element name="polymer-query-box" constructor="PolymerQueryBox" extends="polymer-select-box" attributes="fields query">
+<polymer-element name="query-box" extends="select-box" attributes="fields query">
     <template>
         <style>
             :host::shadow .focused .eliminate {
@@ -185,19 +185,6 @@
                     }
                 };
             }
-            var breakBinding = function(func, marker) {
-                marker = marker || "dontBind";
-                return function() {
-                    if (!this[marker]) {
-                        this[marker] = true;
-                        func.apply(this, arguments);
-                        Platform.flush();
-                        this.async(function() {
-                            this[marker] = false;
-                        });
-                    }
-                }
-            };
             Polymer({
                 _fields: null,
 
@@ -214,7 +201,7 @@
                     throw "Not allowed. Use `query` instead !";
                 },
 
-                queryChanged: breakBinding(function(_, value) {
+                queryChanged: SelectBoxUtils.breakBinding(function(_, value) {
                     var selected = [];
                     value.forEach(function(item, i) {
                         ['field', 'operator', 'target', 'value'].forEach(function(name) {
@@ -241,7 +228,7 @@
                     });
                     this._selected = selected;
                 }),
-                _selectedChanged: breakBinding(function(oldValue, newValue) {
+                _selectedChanged: SelectBoxUtils.breakBinding(function(oldValue, newValue) {
                     this.query = this._choices.filter(function(item) {
                         return item.isComplete;
                     }).map(function(item) {
