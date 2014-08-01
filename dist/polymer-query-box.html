@@ -1,7 +1,7 @@
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../polymer-select-box/dist/polymer-select-box.html">
 
-<polymer-element name="polymer-query-box" constructor="PolymerQueryBox" extends="polymer-select-box">
+<polymer-element name="polymer-query-box" constructor="PolymerQueryBox" extends="polymer-select-box" attributes="fields query">
     <template>
         <style>
             :host::shadow .focused .eliminate {
@@ -185,6 +185,19 @@
                     }
                 };
             }
+            var breakBinding = function(func, marker) {
+                marker = marker || "dontBind";
+                return function() {
+                    if (!this[marker]) {
+                        this[marker] = true;
+                        func.apply(this, arguments);
+                        Platform.flush();
+                        this.async(function() {
+                            this[marker] = false;
+                        });
+                    }
+                }
+            };
             Polymer({
                 _fields: null,
 
@@ -200,7 +213,9 @@
                 set selected(value) {
                     throw "Not allowed. Use `query` instead !";
                 },
-                set query(value) {
+
+                queryChanged: breakBinding(function(_, value) {
+                    var selected = [];
                     value.forEach(function(item, i) {
                         ['field', 'operator', 'target', 'value'].forEach(function(name) {
                             if (!item.hasOwnProperty(name)) {
@@ -212,7 +227,7 @@
                             var label = item[name];
                             if (name == 'operator') label = operatorLabels[item.operator];
                             if (name == 'value' && item.target == 'value') label = JSON.stringify(item.value);
-                            this._selected.push(makeItem({
+                            selected.push(makeItem({
                                 value: item[name],
                                 label: label,
                                 next: {
@@ -222,20 +237,21 @@
                                     value: 'start'
                                 }[name]
                             }));
-                        }, this);
-                    }, this);
-                },
-                get query() {
-                    return this._choices.filter(function(item) {
+                        });
+                    });
+                    this._selected = selected;
+                }),
+                _selectedChanged: breakBinding(function(oldValue, newValue) {
+                    this.query = this._choices.filter(function(item) {
                         return item.isComplete;
                     }).map(function(item) {
                         return item.fields;
-                    })
-                },
+                    });
+                }),
 
                 get _choices() {
                     var current = new Group(), result = [current];
-                    this._selected.forEach(function(item, i){
+                    if (this._selected) this._selected.forEach(function(item, i){
                         current.push(item, i);
                         if (current.isComplete) {
                             result.push(current=new Group());
@@ -248,6 +264,8 @@
                 ///// events //////
                 created: function() {
                     this._fields = [];
+                    this.query = []
+                    //this.
                     this.super();
                 },
                 ///// other //////
