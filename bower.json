@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer",
-    "select-box": ">=2.0.2"
+    "select-box": ">=2.0.4"
   },
   "devDependencies": {
     "json-box": "*"
