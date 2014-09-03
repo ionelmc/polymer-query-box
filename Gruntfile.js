@@ -15,7 +15,7 @@ module.exports = function(grunt) {
             },
             src: [
                 'bower_components/**/*',
-                '!bower_components/polymer-query-box/**/*',
+                '!bower_components/query-box/**/*',
                 'demo/*', 'src/*', 'index.html'
             ]
         },
@@ -38,10 +38,10 @@ module.exports = function(grunt) {
         },
         shell: {
             register: {
-                command: 'bower register polymer-query-box git://github.com/ionelmc/polymer-query-box.git'
+                command: 'bower register query-box git://github.com/ionelmc/polymer-query-box.git'
             },
             info: {
-                command: 'bower info polymer-query-box'
+                command: 'bower info query-box'
             }
         }
     });
