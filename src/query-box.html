@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/select-box/dist/select-box.html">
 
-<polymer-element name="query-box" extends="select-box" attributes="fields query">
+<polymer-element name="query-box" extends="select-box" attributes="fields query availableStates availableOperators">
     <template>
         <style>
             :host::shadow .focused .eliminate {
@@ -94,47 +94,6 @@
 
     <script>//<![CDATA[
         (function() {
-            var operatorLabels = {
-                '==': '=',
-                '!=': '\u2260',
-                '>': '>',
-                '>=': '\u2265',
-                '<': '>',
-                '<=': '\u2264',
-            }
-            var availableStates = {
-                    start: function() {
-                        return this.fields.map(function(name) {
-                            return {value: name, label: name, next: "operator"};
-                        })
-                    },
-                    operator: function() {
-                        return ['==', '!=', '>', '>=', '<', '<='].map(function(value) {
-                            return {value: value, label: operatorLabels[value], next: 'target'}
-                        });
-                    },
-                    target: function() {
-                        return [
-                            {value: 'value', label: 'value', next: 'value'},
-                            {value: 'field', label: 'field', next: 'other'},
-                        ]
-                    },
-                    value: function() {
-                        var query = this._mode == 'edit' ? this._editQuery : this._addQuery
-                        var ret = [
-                            {value: this._addQuery, label: JSON.stringify(query), next: 'start'},
-                        ];
-                        var val = parseFloat(query);
-                        if (isFinite(val))
-                            ret.push({value: val, label: query, next: 'start'});
-                        return ret;
-                    },
-                    other: function() {
-                        return this.fields.map(function(name) {
-                            return {value: name, label: name, next: "start"}
-                        })
-                    },
-                };
             var Group = function(data, offset) {
                 this.state = 'field';
                 this.fields = {};
@@ -201,6 +160,57 @@
                     throw "Not allowed. Use `query` instead !";
                 },
 
+                availableOperators: {
+                    '==': '=',
+                    '!=': '\u2260',
+                    '>': '>',
+                    '>=': '\u2265',
+                    '<': '>',
+                    '<=': '\u2264',
+                },
+                availableStates: {
+                    start: function() {
+                        //return function(query, callback) {
+                        //    setTimeout(function() {
+                        //        callback(this.fields.map(function(name) {
+                        //            return {value: name, label: name, next: "operator"};
+                        //        }));
+                        //    }.bind(this), 500);
+                        //};
+                        return this.fields.map(function(name) {
+                            return {value: name, label: name, next: "operator"};
+                        });
+                    },
+                    //field: function() {
+                    //},
+                    operator: function() {
+                        return ['==', '!=', '>', '>=', '<', '<='].map(function(value) {
+                            return {value: value, label: this.availableOperators[value], next: 'target'}
+                        }, this);
+                    },
+                    target: function() {
+                        return [
+                            {value: 'value', label: 'value', next: 'value'},
+                            {value: 'field', label: 'field', next: 'other'},
+                        ]
+                    },
+                    value: function() {
+                        var query = this._mode == 'edit' ? this._editQuery : this._addQuery
+                        var ret = [
+                            {value: this._addQuery, label: JSON.stringify(query), next: 'start'},
+                        ];
+                        var val = parseFloat(query);
+                        if (isFinite(val))
+                            ret.push({value: val, label: query, next: 'start'});
+                        return ret;
+                    },
+                    other: function() {
+                        return this.fields.map(function(name) {
+                            return {value: name, label: name, next: "start"}
+                        })
+                    },
+                },
+
                 queryChanged: SelectBoxUtils.breakBinding(function(_, value) {
                     var selected = [];
                     value.forEach(function(item, i) {
@@ -212,7 +222,7 @@
                                 throw "Invalid value: " + item[name] + " at pos `" + i + "." + name + "`. Only 'value' and 'field' are accepted. Item was: " + JSON.stringify(item);
                             }
                             var label = item[name];
-                            if (name == 'operator') label = operatorLabels[item.operator];
+                            if (name == 'operator') label = this.availableOperators[item.operator];
                             if (name == 'value' && item.target == 'value') label = JSON.stringify(item.value);
                             selected.push(makeItem({
                                 value: item[name],
@@ -224,8 +234,8 @@
                                     value: 'start'
                                 }[name]
                             }));
-                        });
-                    });
+                        }, this);
+                    }, this);
                     this._selected = selected;
                 }),
                 _selectedChanged: SelectBoxUtils.breakBinding(function(oldValue, newValue) {
@@ -259,15 +269,15 @@
 
 
                 _filter: function(query) {
-                    var first, next;
+                    var current, next;
                     if (this._mode == 'add') {
-                        first = this._selected[this._selected.length - 1];
+                        current = this._selected[this._selected.length - 1];
                     } else {
-                        first = this._selected[this._selectedFocusPos - 1];
+                        current = this._selected[this._selectedFocusPos - 1];
                     }
-                    next = first ? first.next : 'start';
+                    next = current ? current.next : 'start';
 
-                    this._available = availableStates[next].call(this, first)
+                    this._available = this.availableStates[next].call(this, current)
                     this.super([query]);
                 },
                 _isAvailable: function() {
