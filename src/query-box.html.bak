@@ -158,12 +158,14 @@
                     '!=': '\u2260',
                     '>': '>',
                     '>=': '\u2265',
-                    '<': '<',
+                    '<': '>',
                     '<=': '\u2264',
                 },
                 availableStates: {
                     start: function() {
-                        return this._prepareOrWrapCallback(this.fields, "operator");
+                        return this.fields.map(function(name) {
+                            return {value: name, label: name, next: "operator"};
+                        });
                     },
                     operator: function() {
                         return ['==', '!=', '>', '>=', '<', '<='].map(function(value) {
@@ -177,7 +179,7 @@
                         ]
                     },
                     value: function() {
-                        var query = this._mode == 'edit' ? this._editQuery : this._addQuery;
+                        var query = this._mode == 'edit' ? this._editQuery : this._addQuery
                         var ret = [
                             {value: this._addQuery, label: JSON.stringify(query), next: 'start'},
                         ];
@@ -187,7 +189,9 @@
                         return ret;
                     },
                     other: function() {
-                        return this._prepareOrWrapCallback(this.fields, "start");
+                        return this.fields.map(function(name) {
+                            return {value: name, label: name, next: "start"}
+                        })
                     },
                 },
                 fieldsChanged: function(oldValue, newValue) {
@@ -221,14 +225,11 @@
                     this._selected = selected;
                 }),
                 _selectedChanged: SelectBoxUtils.breakBinding(function(oldValue, newValue) {
-                    //this.query.slice(0, this.query.length);
-                    //Array.prototype.push.apply(this.query, this._choices.filter(function(item) {
                     this.query = this._choices.filter(function(item) {
                         return item.isComplete;
                     }).map(function(item) {
                         return item.fields;
-                    })
-                    //);
+                    });
                 }),
 
                 get _choices() {
@@ -246,36 +247,12 @@
                 ///// events //////
                 created: function() {
                     this.fields = [];
-                    this.query = [];
+                    this.query = []
                     //this.
                     this.super();
                 },
                 ///// other //////
-                _prepareAndTagItems: function(values, next) {
-                    return values.map(function(value, i) {
-                        if (typeof value == "string") {
-                            if (!value || !value.length) {
-                                throw "Can't accept falsy value in choices list. Item " + i + ": `" + value + "`";
-                            }
-                            return {value: value, label: value, next: next};
-                        } else {
-                            return value;
-                        }
-                    });
 
-
-                },
-                _prepareOrWrapCallback: function(values_or_callback, next) {
-                    if (typeof values_or_callback == 'function') {
-                        return function(query, callback) {
-                            values_or_callback(query, function(data) {
-                                callback(this._prepareAndTagItems(data, next));
-                            }.bind(this));
-                        }.bind(this);
-                    } else {
-                        return this._prepareAndTagItems(values_or_callback, next);
-                    }
-                },
 
                 _filter: function(query) {
                     var current, next;
@@ -296,15 +273,13 @@
                     return !query || !query.length || item.value.toString().indexOf(query) >= 0;
                 },
                 _addItemToSelected: function(item) {
-                    if (item) {
-                        this._selected.push(makeItem({
-                            value: item.value,
-                            label: item.label,
-                            next: item.next
-                        }));
-                        this._addQuery = '';
-                        this._updateAvailable();
-                    }
+                    this._selected.push(makeItem({
+                        value: item.value,
+                        label: item.label,
+                        next: item.next
+                    }));
+                    this._addQuery = '';
+                    this._updateAvailable();
                 },
                 _selectedFocusChanged: function(oldValue, newValue) {
                     this.super(arguments);

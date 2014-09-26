@@ -53,7 +53,7 @@
                 display: inline-block;
                 outline: none;
                 font-size: 16px;
-                padding: 10px 0;
+                padding: 0;
                 vertical-align: middle;
             }
             #input[readonly] {
@@ -99,8 +99,12 @@
             .choice:hover {
                 border: 1px solid #aaa;
             }
-            ._empty {
+            ._loading, ._empty {
                 padding: 5px;
+            }
+            ._loading {
+                background: 5px center no-repeat url("loading.gif");
+                padding-left: 28px;
             }
             .unmatched {
                 color: #e00;
@@ -130,12 +134,17 @@
                 border-right: 1px solid #6c9fc6;
             }
             .eliminate {
-                padding: 0 3px;
-                font-size: 75%;
-                margin: 2px 0 0 2px;
+                font-family: "Segoe UI Symbol", "Arial Unicode MS", sans-serif;
+                vertical-align: top;
+                height: 16px;
+                width: 16px;
+                line-height: 16px;
+                text-align: center;
+                font-size: 8px;
+                margin: 2px 0 0 4px;
                 background: #ccc;
                 color: #fff;
-                border-radius: 8px;
+                border-radius: 10px;
                 cursor: pointer;
                 display: none;
             }
@@ -187,7 +196,12 @@
                          on-mousedown="{{ _onClickAvailable }}">{{ c.label }}
                     </div>
                 </template>
-                <template if="{{ _empty }}">
+                <template if="{{ _loading }}">
+                    <div class="_loading">
+                        Loading choices ...
+                    </div>
+                </template>
+                <template if="{{ !_loading && _empty }}">
                     <div class="_empty">
                         No available choices.
                     </div>
@@ -269,11 +283,23 @@
                 return !query || !query.length || item.label.toString().indexOf(query) >= 0;
             },
             _filter: function(value) {
-                this._matched = this._available.filter(function(item) {
+                if (typeof this._available == "function") {
+                    this._loading = true;
+                    this._matched = [];
+                    this._available(value, function(data) {
+                        this._updateMatched(data, value);
+                    }.bind(this));
+                } else {
+                    this._updateMatched(this._available, value);
+                }
+            },
+            _updateMatched: function(data, value) {
+                this._matched = data.filter(function(item) {
                     item.highlighted = false;
                     return this._isAvailable(item) && this._isMatch(item, value);
                 }, this);
                 this._empty = !this._matched.length;
+                this._loading = false;
                 if (this._matched.length) {
                     this._matched[0].highlighted = true;
                 }
@@ -324,6 +350,8 @@
             /////////// PUBLIC INTERFACE ///////////
             availableChanged: function(oldValue, newValue) {
                 if (newValue) {
+                    // TODO, check if newValue is function
+
                     this._available = newValue.map(function(value, i) {
                         if (typeof value == "string") {
                             if (!value || !value.length) {

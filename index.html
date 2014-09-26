@@ -24,7 +24,11 @@
             Fields:
             <json-box rows="1" json="{{ box.fields }}"></json-box>
         </blockquote>
+        <hr>Lazy:
+        <query-box id="lazy" query="{{ box.query }}" fields="{{ lazy_fields }}"></query-box>
     </template>
+
+    <hr>Normal:
     <query-box id="doi"></query-box>
 
     <script>
@@ -39,6 +43,16 @@
                 'field3',
                 'field4'
             ];
+            result.lazy_fields = function (query, callback) {
+                setTimeout(function() {
+                    callback([
+                        'field1',
+                        'field2',
+                        'field3',
+                        'field4'
+                    ]);
+                }, 500);
+            };
             doi.query = [{
                 field: "field1",
                 operator: "==",
@@ -49,7 +63,7 @@
                 operator: "!=",
                 target: "field",
                 value: "field4"
-            }]
+            }];
             doi.focus();
             result.stringify = function(val) {
                 return JSON.stringify(val, null, "    ");
